@@ -11,8 +11,6 @@ use SilverStripe\Dev\FunctionalTest;
 use Symbiote\Cloudflare\Cloudflare;
 use ReflectionObject;
 
-//use Symbiote\Multisites\Model\Site;
-
 class CloudflarePurgePageTest extends FunctionalTest
 {
     protected static $disable_themes = true;
@@ -50,7 +48,11 @@ class CloudflarePurgePageTest extends FunctionalTest
 
         $baseUrl = rtrim(SS_BASE_URL, '/');
         $this->assertEquals(
-            ['', $baseUrl, $baseUrl.'/'],
+            [
+                '',
+                $baseUrl,
+                $baseUrl . '/'
+            ],
             $linksBeingCleared,
             'Expected "Cloudflare::purgePage" on a home page record to return both the base url and /'
         );
@@ -74,7 +76,10 @@ class CloudflarePurgePageTest extends FunctionalTest
 
         $baseUrl = rtrim(SS_BASE_URL, '/');
         $this->assertEquals(
-            [$baseUrl.'/cloudflare-test-page', $baseUrl.'/cloudflare-test-page/'],
+            [
+                $baseUrl . '/cloudflare-test-page',
+                $baseUrl . '/cloudflare-test-page/'
+            ],
             $linksBeingCleared,
             'Expected "Cloudflare::purgePage" on a home page record to return both the base url and /'
         );

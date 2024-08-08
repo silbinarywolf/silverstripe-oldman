@@ -3,7 +3,9 @@
     "description": "A simple cache purging module for Silverstripe.",
     "type": "silverstripe-vendormodule",
     "keywords": [
-        "silverstripe"
+        "silverstripe",
+        "cloudflare",
+        "cache"
     ],
     "license": "BSD-3-Clause",
     "authors": [

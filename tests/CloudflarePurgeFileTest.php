@@ -43,7 +43,10 @@ class CloudflarePurgeFileTest extends FunctionalTest
         Requirements::set_combined_files_enabled(true); // not enabled by default in SS4
         Requirements::combine_files(
             'combined.min.css',
-            [self::ASSETS_DIR.'/test_combined_css_a.css', self::ASSETS_DIR.'/test_combined_css_b.css']
+            [
+                self::ASSETS_DIR.'/test_combined_css_a.css',
+                self::ASSETS_DIR.'/test_combined_css_b.css'
+            ]
         );
         Requirements::process_combined_files();
 
@@ -94,9 +97,11 @@ class CloudflarePurgeFileTest extends FunctionalTest
     public function testAllowBlacklistedDirectories()
     {
         Config::inst()->set(Cloudflare::FILESYSTEM_CLASS, 'disable_default_blacklist_absolute_pathnames', true);
-        $files = $this->getFilesToPurgeByExtensions(
-            ['css', 'js', 'json']
-        );
+        $files = $this->getFilesToPurgeByExtensions([
+            'css',
+            'js',
+            'json'
+        ]);
         Config::inst()->set(Cloudflare::FILESYSTEM_CLASS, 'disable_default_blacklist_absolute_pathnames', false);
 
         // If it has a file from the 'framework' module, fail this test as it should be ignored.

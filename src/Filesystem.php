@@ -48,7 +48,13 @@ class Filesystem
      *
      * @var array
      */
-    protected $defaultBlacklistAbsolutePathnames = ['%BASE_FOLDER%/framework', '%BASE_FOLDER%/cms', '%BASE_FOLDER%/assets', '%BASE_FOLDER%/vendor', '%BASE_FOLDER%/silverstripe-cache'];
+    protected $defaultBlacklistAbsolutePathnames = [
+        '%BASE_FOLDER%/framework',
+        '%BASE_FOLDER%/cms',
+        '%BASE_FOLDER%/assets',
+        '%BASE_FOLDER%/vendor',
+        '%BASE_FOLDER%/silverstripe-cache'
+    ];
 
     /**
      * Walk the directory provided recursively and get all files that match
