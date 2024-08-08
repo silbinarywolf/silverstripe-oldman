@@ -1,6 +1,6 @@
 <?php
 
-$PROJECT_DIR = dirname(__FILE__).'/../..';
+$PROJECT_DIR = __DIR__.'/../..';
 /**
  * This file is required to setup Silverstripe class autoloader
  */
