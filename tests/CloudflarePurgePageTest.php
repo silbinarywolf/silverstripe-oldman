@@ -2,23 +2,20 @@
 
 namespace Symbiote\Cloudflare\Tests;
 
-use ReflectionObject;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Control\Director;
+use Cloudflare\API\Endpoints\EndpointException;
+use SilverStripe\CMS\Controllers\RootURLController;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use Symbiote\Cloudflare\Cloudflare;
-use SilverStripe\CMS\Controllers\RootURLController;
-use SilverStripe\Control\Controller;
-
-//use Symbiote\Multisites\Model\Site;
+use ReflectionObject;
 
 class CloudflarePurgePageTest extends FunctionalTest
 {
     protected static $disable_themes = true;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         if (!defined('SS_BASE_URL')) {
@@ -46,16 +43,16 @@ class CloudflarePurgePageTest extends FunctionalTest
         $record->write();
         $record->publishSingle();
 
-        $homePage = SiteTree::get()->filter(array('URLSegment' => $homeSlug))->first();
+        $homePage = SiteTree::get()->filter(['URLSegment' => $homeSlug])->first();
         $linksBeingCleared = $this->getLinksToPurgeByPage($homePage);
 
         $baseUrl = rtrim(SS_BASE_URL, '/');
         $this->assertEquals(
-            array(
+            [
                 '',
                 $baseUrl,
-                $baseUrl.'/',
-            ),
+                $baseUrl . '/'
+            ],
             $linksBeingCleared,
             'Expected "Cloudflare::purgePage" on a home page record to return both the base url and /'
         );
@@ -74,15 +71,15 @@ class CloudflarePurgePageTest extends FunctionalTest
         $record->write();
         $record->publishSingle();
 
-        $record = SiteTree::get()->filter(array('URLSegment' => 'cloudflare-test-page'))->first();
+        $record = SiteTree::get()->filter(['URLSegment' => 'cloudflare-test-page'])->first();
         $linksBeingCleared = $this->getLinksToPurgeByPage($record);
 
         $baseUrl = rtrim(SS_BASE_URL, '/');
         $this->assertEquals(
-            array(
-                $baseUrl.'/cloudflare-test-page',
-                $baseUrl.'/cloudflare-test-page/',
-            ),
+            [
+                $baseUrl . '/cloudflare-test-page',
+                $baseUrl . '/cloudflare-test-page/'
+            ],
             $linksBeingCleared,
             'Expected "Cloudflare::purgePage" on a home page record to return both the base url and /'
         );
@@ -96,14 +93,14 @@ class CloudflarePurgePageTest extends FunctionalTest
      */
     public function testPurgePage()
     {
-        Config::inst()->update(Cloudflare::class, 'enabled', true);
+        Config::inst()->set(Cloudflare::class, 'enabled', true);
 
         $wasPurgePageCalled = false;
         $record = SiteTree::create();
         $record->write();
         try {
             $record->publishSingle();
-        } catch (\Cloudflare\Exception\AuthenticationException $e) {
+        } catch (EndpointException) {
             // NOTE(Jake): 2018-04-26
             //
             // This is expected behaviour. Since we're running `purgePage` with Cloudflare

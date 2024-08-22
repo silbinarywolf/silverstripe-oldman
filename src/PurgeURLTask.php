@@ -10,7 +10,7 @@ class PurgeURLTask extends \SilverStripe\Dev\BuildTask
 
     protected $description = 'Purges a single or multiple URLs, with an absolute or relative URL (ie. url="admin/,Security/" or url="http://myproductionsite.com/admin, http://myproductionsite.com/Security")';
 
-    protected $param_url = array();
+    protected $param_url = [];
 
     public function run($request)
     {
@@ -21,7 +21,7 @@ class PurgeURLTask extends \SilverStripe\Dev\BuildTask
         }
 
         // Allow multiple URLs
-        $urlList = explode(',', $url);
+        $urlList = explode(',', (string) $url);
         foreach ($urlList as $i => $url) {
             $url = trim($url);
             // Remove URL if it's a blank string, this allows trailing commas

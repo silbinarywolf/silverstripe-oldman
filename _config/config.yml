@@ -4,3 +4,7 @@ Name: cloudflare_extensions
 SilverStripe\CMS\Model\SiteTree:
   extensions:
     - Symbiote\Cloudflare\SiteTreeExtension
+
+SilverStripe\Assets\File:
+  extensions:
+    - Symbiote\Cloudflare\FileExtension

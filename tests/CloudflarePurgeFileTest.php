@@ -2,27 +2,25 @@
 
 namespace Symbiote\Cloudflare\Tests;
 
-use ReflectionObject;
-use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\View\Requirements;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\View\Requirements;
 use Symbiote\Cloudflare\Cloudflare;
-use Symbiote\Cloudflare\Filesystem;
+use ReflectionObject;
 
 class CloudflarePurgeFileTest extends FunctionalTest
 {
     /**
      * The assets used by the tests
      */
-    const ASSETS_DIR = 'vendor/symbiote/silverstripe-oldman/tests/assets';
+    public const ASSETS_DIR = 'vendor/symbiote/silverstripe-oldman/tests/assets';
 
     /**
      * This is used to determine if the 'framework' folder was scanned
      * for CSS/JS files.
      */
-    const FRAMEWORK_CSS_FILE = 'vendor/silverstripe/framework/src/Dev/Install/client/styles/install.css';
+    public const FRAMEWORK_CSS_FILE = 'vendor/silverstripe/framework/client/styles/debug.css';
 
     protected static $disable_themes = true;
 
@@ -37,30 +35,26 @@ class CloudflarePurgeFileTest extends FunctionalTest
     {
         // Create files
         @mkdir(self::ASSETS_DIR, 0777, true);
-        file_put_contents(self::ASSETS_DIR.'/test_combined_css_a.css', '.selector_a { width: 100%; }');
-        file_put_contents(self::ASSETS_DIR.'/test_combined_css_b.css', '.selector_b { width: 100%; }');
+        file_put_contents(self::ASSETS_DIR . '/test_combined_css_a.css', '.selector_a { width: 100%; }');
+        file_put_contents(self::ASSETS_DIR . '/test_combined_css_b.css', '.selector_b { width: 100%; }');
 
         // Generate combined files
         Requirements::delete_all_combined_files();
         Requirements::set_combined_files_enabled(true); // not enabled by default in SS4
         Requirements::combine_files(
             'combined.min.css',
-            array(
-            self::ASSETS_DIR.'/test_combined_css_a.css',
-            self::ASSETS_DIR.'/test_combined_css_b.css',
-            )
+            [
+                self::ASSETS_DIR . '/test_combined_css_a.css',
+                self::ASSETS_DIR . '/test_combined_css_b.css'
+            ]
         );
         Requirements::process_combined_files();
 
         //
         $files = $this->getFilesToPurgeByExtensions(
-            array(
-            'css',
-            'js',
-            'json',
-            )
+            ['css', 'js', 'json']
         );
-        $expectedFiles = array(
+        $expectedFiles = [
             // NOTE(Jake): 2018-04-19
             //
             // In SS4, combined files have a partial-hash
@@ -68,16 +62,13 @@ class CloudflarePurgeFileTest extends FunctionalTest
             //
             // So we only partially match the name.
             //
-            ASSETS_DIR.'/_combinedfiles/combined.min-',
-            // NOTE(Jake): 2018-04-19, Moved under "vendor" in SS4.
-            //'oldman/tests/assets/test_combined_css_a.css',
-            //'oldman/tests/assets/test_combined_css_b.css',
-        );
+            ASSETS_DIR . '/_combinedfiles/combined.min-',
+        ];
         // Search for matches
         $matchCount = 0;
         foreach ($files as $file) {
             foreach ($expectedFiles as $expectedFile) {
-                if (strpos($file, $expectedFile) !== false) {
+                if (str_contains((string) $file, $expectedFile)) {
                     $matchCount++;
                     break;
                 }
@@ -86,15 +77,15 @@ class CloudflarePurgeFileTest extends FunctionalTest
         $this->assertEquals(
             count($expectedFiles),
             $matchCount,
-            "Expected file list:\n".print_r($expectedFiles, true)."Instead got:\n".print_r($files, true)
+            "Expected file list:\n" . print_r($expectedFiles, true) . "Instead got:\n" . print_r($files, true)
         );
 
         // If it has a file from the 'framework' module, fail this test as it should be ignored.
         $hasFramework = false;
         foreach ($files as $file) {
-            $hasFramework = $hasFramework || (strpos($file, self::FRAMEWORK_CSS_FILE) !== false);
+            $hasFramework = $hasFramework || (str_contains((string) $file, self::FRAMEWORK_CSS_FILE));
         }
-        $this->assertFalse($hasFramework, 'Expected to specifically not get the "framework" file: '.self::FRAMEWORK_CSS_FILE);
+        $this->assertFalse($hasFramework, 'Expected to specifically not get the "framework" file: ' . self::FRAMEWORK_CSS_FILE);
 
         // Cleanup
         //@rmdir(self::ASSETS_DIR);
@@ -105,24 +96,22 @@ class CloudflarePurgeFileTest extends FunctionalTest
      */
     public function testAllowBlacklistedDirectories()
     {
-        Config::inst()->update(Cloudflare::FILESYSTEM_CLASS, 'disable_default_blacklist_absolute_pathnames', true);
-        $files = $this->getFilesToPurgeByExtensions(
-            array(
+        Config::inst()->set(Cloudflare::FILESYSTEM_CLASS, 'disable_default_blacklist_absolute_pathnames', true);
+        $files = $this->getFilesToPurgeByExtensions([
             'css',
             'js',
-            'json',
-            )
-        );
-        Config::inst()->update(Cloudflare::FILESYSTEM_CLASS, 'disable_default_blacklist_absolute_pathnames', false);
+            'json'
+        ]);
+        Config::inst()->set(Cloudflare::FILESYSTEM_CLASS, 'disable_default_blacklist_absolute_pathnames', false);
 
         // If it has a file from the 'framework' module, fail this test as it should be ignored.
         $hasFramework = false;
         foreach ($files as $file) {
-            $hasFramework = $hasFramework || (strpos($file, self::FRAMEWORK_CSS_FILE) !== false);
+            $hasFramework = $hasFramework || (str_contains((string) $file, self::FRAMEWORK_CSS_FILE));
         }
         $this->assertTrue(
             $hasFramework,
-            'Expected to get "framework" file: '.self::FRAMEWORK_CSS_FILE."\nInstead got:".print_r($files, true)
+            'Expected to get "framework" file: ' . self::FRAMEWORK_CSS_FILE . "\nInstead got:" . print_r($files, true)
         );
     }
 
