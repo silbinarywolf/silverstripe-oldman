@@ -59,9 +59,9 @@ trait PurgeTask
         if (!$errors) {
             $this->log('SUCCESS');
         } else {
-            $this->log($status.'. ('.count($errors).' failed)');
+            $this->log($status . '. (' . count($errors) . ' failed)');
         }
-        $this->log('Time taken: '.$timeTakenInSeconds.' seconds.');
+        $this->log('Time taken: ' . $timeTakenInSeconds . ' seconds.');
     }
 
     public function run($request)
@@ -72,6 +72,6 @@ trait PurgeTask
     protected function log($message)
     {
         $newline = Director::is_cli() ? "\n" : "<br/>";
-        echo $message.$newline;
+        echo $message . $newline;
     }
 }

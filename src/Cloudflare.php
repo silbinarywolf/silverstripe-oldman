@@ -319,7 +319,7 @@ class Cloudflare
         // CloudFlare requires both one with and without a forward-slash.
         $pageLink = rtrim($pageLink, '/');
         $files[] = $pageLink;
-        $files[] = $pageLink.'/';
+        $files[] = $pageLink . '/';
 
         // If /home/ for HomePage, also add "/" to be cleared.
         if ($this->isHomePage($page)) {
@@ -349,7 +349,7 @@ class Cloudflare
         if (!$ignoreDatabaseRecords) {
             $fileExtensionsPrefixedWithDot = [];
             foreach ($fileExtensions as $fileExtension) {
-                $fileExtensionsPrefixedWithDot[] = '.'.$fileExtension;
+                $fileExtensionsPrefixedWithDot[] = '.' . $fileExtension;
             }
             $fileRecordList = File::get()->filter(
                 ['FileFilename:EndsWith' => $fileExtensionsPrefixedWithDot]

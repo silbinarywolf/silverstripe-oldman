@@ -123,7 +123,7 @@ class Filesystem
                     continue;
                 }
 
-                $pathname = $current_directory.'/'.$filename;
+                $pathname = $current_directory . '/' . $filename;
 
                 if (is_dir($pathname) === true) {
                     $directory_stack[] = $pathname;

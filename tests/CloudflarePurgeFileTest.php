@@ -35,8 +35,8 @@ class CloudflarePurgeFileTest extends FunctionalTest
     {
         // Create files
         @mkdir(self::ASSETS_DIR, 0777, true);
-        file_put_contents(self::ASSETS_DIR.'/test_combined_css_a.css', '.selector_a { width: 100%; }');
-        file_put_contents(self::ASSETS_DIR.'/test_combined_css_b.css', '.selector_b { width: 100%; }');
+        file_put_contents(self::ASSETS_DIR . '/test_combined_css_a.css', '.selector_a { width: 100%; }');
+        file_put_contents(self::ASSETS_DIR . '/test_combined_css_b.css', '.selector_b { width: 100%; }');
 
         // Generate combined files
         Requirements::delete_all_combined_files();
@@ -44,8 +44,8 @@ class CloudflarePurgeFileTest extends FunctionalTest
         Requirements::combine_files(
             'combined.min.css',
             [
-                self::ASSETS_DIR.'/test_combined_css_a.css',
-                self::ASSETS_DIR.'/test_combined_css_b.css'
+                self::ASSETS_DIR . '/test_combined_css_a.css',
+                self::ASSETS_DIR . '/test_combined_css_b.css'
             ]
         );
         Requirements::process_combined_files();
@@ -62,7 +62,7 @@ class CloudflarePurgeFileTest extends FunctionalTest
             //
             // So we only partially match the name.
             //
-            ASSETS_DIR.'/_combinedfiles/combined.min-',
+            ASSETS_DIR . '/_combinedfiles/combined.min-',
         ];
         // Search for matches
         $matchCount = 0;
@@ -77,7 +77,7 @@ class CloudflarePurgeFileTest extends FunctionalTest
         $this->assertEquals(
             count($expectedFiles),
             $matchCount,
-            "Expected file list:\n".print_r($expectedFiles, true)."Instead got:\n".print_r($files, true)
+            "Expected file list:\n" . print_r($expectedFiles, true) . "Instead got:\n" . print_r($files, true)
         );
 
         // If it has a file from the 'framework' module, fail this test as it should be ignored.
@@ -85,7 +85,7 @@ class CloudflarePurgeFileTest extends FunctionalTest
         foreach ($files as $file) {
             $hasFramework = $hasFramework || (str_contains((string) $file, self::FRAMEWORK_CSS_FILE));
         }
-        $this->assertFalse($hasFramework, 'Expected to specifically not get the "framework" file: '.self::FRAMEWORK_CSS_FILE);
+        $this->assertFalse($hasFramework, 'Expected to specifically not get the "framework" file: ' . self::FRAMEWORK_CSS_FILE);
 
         // Cleanup
         //@rmdir(self::ASSETS_DIR);
@@ -111,7 +111,7 @@ class CloudflarePurgeFileTest extends FunctionalTest
         }
         $this->assertTrue(
             $hasFramework,
-            'Expected to get "framework" file: '.self::FRAMEWORK_CSS_FILE."\nInstead got:".print_r($files, true)
+            'Expected to get "framework" file: ' . self::FRAMEWORK_CSS_FILE . "\nInstead got:" . print_r($files, true)
         );
     }
 
